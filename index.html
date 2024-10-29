@@ -1,0 +1,308 @@
+<html><head><base href="." />
+<title>Clock - Ashlynn Repository</title>
+<link rel="icon" type="image/png" href="https://i.ibb.co/ZSfVw8V/image.png">
+<style>
+    :root {
+        --primary-bg: #1a1a2e;
+        --accent-color: rgba(147, 51, 234, 0.3);
+        --text-glow: rgba(147, 51, 234, 0.5);
+    }
+
+    .theme-red {
+        --primary-bg: #2e1a1a;
+        --accent-color: rgba(234, 51, 51, 0.3);
+        --text-glow: rgba(234, 51, 51, 0.5);
+    }
+
+    .theme-blue {
+        --primary-bg: #1a1e2e;
+        --accent-color: rgba(51, 83, 234, 0.3);
+        --text-glow: rgba(51, 83, 234, 0.5);
+    }
+
+    .theme-green {
+        --primary-bg: #1a2e1a;
+        --accent-color: rgba(51, 234, 83, 0.3);
+        --text-glow: rgba(51, 234, 83, 0.5);
+    }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, var(--primary-bg) 0%, #16213e 100%);
+        font-family: 'Segoe UI', sans-serif;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .container {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(26, 26, 46, 0.6);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px var(--accent-color);
+        transition: all 0.3s ease;
+    }
+
+    /* Full screen mode styles */
+    .fullscreen-mode .container {
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    .fullscreen-mode #clock {
+        font-size: 10rem;
+    }
+
+    .fullscreen-mode .title,
+    .fullscreen-mode #fact,
+    .fullscreen-mode .toggle-date-btn {
+        display: none;
+    }
+
+    .fullscreen-mode #date {
+        font-size: 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-shadow: 0 0 15px var(--text-glow);
+        color: #e2e8f0;
+    }
+
+    #clock {
+        font-size: 5rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        text-shadow: 0 0 20px var(--text-glow);
+        color: #e2e8f0;
+        transition: font-size 0.3s ease;
+    }
+
+    #fact {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 1rem 0;
+        line-height: 1.6;
+        color: #cbd5e1;
+        padding: 1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .button {
+        margin: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--accent-color);
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid var(--accent-color);
+    }
+
+    .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px var(--accent-color);
+        opacity: 0.8;
+    }
+
+    #date {
+        margin-top: 1rem;
+        font-size: 1.2rem;
+        color: #a5b4fc;
+        text-shadow: 0 0 10px var(--text-glow);
+        height: 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    #date.visible {
+        height: 1.5em;
+        opacity: 1;
+    }
+
+    .theme-buttons {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 1000;
+    }
+
+    .fullscreen-toggle {
+        background: var(--accent-color);
+        border: none;
+        color: white;
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .fullscreen-toggle:hover {
+        transform: scale(1.1);
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Welcome to the AR clock</h1>
+        <div id="clock">00:00:00</div>
+        <div id="fact">Loading an interesting fact...</div>
+        <button class="button toggle-date-btn" onclick="toggleDate()">Toggle Date</button>
+        <div id="date"></div>
+        <div class="theme-buttons">
+            <button class="button" onclick="setTheme('theme-purple')">Purple</button>
+            <button class="button" onclick="setTheme('theme-red')">Red</button>
+            <button class="button" onclick="setTheme('theme-blue')">Blue</button>
+            <button class="button" onclick="setTheme('theme-green')">Green</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="fullscreen-toggle" onclick="toggleFullscreen()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+        </button>
+    </div>
+
+<script>
+    const facts = [
+        "The observable universe is estimated to contain over 100 billion galaxies.",
+        "A day on Venus is longer than its year.",
+        "Honey never spoils. Archaeologists found 3000-year-old honey in Egyptian tombs.",
+        "The human brain can process images in as little as 13 milliseconds.",
+        "A single lightning bolt can heat the air around it to 50,000°F (27,760°C).",
+        "Octopuses have three hearts and blue blood.",
+        "Ashlynn is an English name derived from Irish origins. It's a modern version of the Irish name 'Aislinn' (pronounced Ash-lin).",
+        "The first computer programmer was a woman named Ada Lovelace.",
+        "Bananas are berries, but strawberries aren't.",
+        "Aarabh is an uncommon name that likely has roots in Indian culture, with its origin tied to Sanskrit. While it's not widely used, it has a modern, unique appeal.",
+        "The Great Wall of China is not visible from space with the naked eye.",
+        "Approximately 70% of the Earth's surface is covered by water."
+    ];
+
+    let currentFactIndex = 0;
+    let dateVisible = false;
+    let isFullscreen = false;
+
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { 
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        document.getElementById('clock').textContent = timeStr;
+    }
+
+    function updateFact() {
+        const factElement = document.getElementById('fact');
+        factElement.style.opacity = '0';
+        
+        setTimeout(() => {
+            currentFactIndex = (currentFactIndex + 1) % facts.length;
+            factElement.textContent = facts[currentFactIndex];
+            factElement.style.opacity = '1';
+        }, 300);
+    }
+
+    function toggleDate() {
+        const dateElement = document.getElementById('date');
+        const now = new Date();
+        dateElement.textContent = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        dateVisible = !dateVisible;
+        dateElement.classList.toggle('visible');
+    }
+
+    function setTheme(theme) {
+        document.body.className = theme;
+        if (isFullscreen) {
+            document.body.classList.add('fullscreen-mode');
+        }
+    }
+
+    function toggleFullscreen() {
+        isFullscreen = !isFullscreen;
+        document.body.classList.toggle('fullscreen-mode');
+        
+        if (isFullscreen) {
+            // Automatically show date in fullscreen mode
+            const dateElement = document.getElementById('date');
+            if (!dateVisible) {
+                toggleDate();
+            }
+        }
+
+        // Update the fullscreen toggle icon
+        const icon = document.querySelector('.fullscreen-toggle svg');
+        if (isFullscreen) {
+            icon.innerHTML = `<path d="M3 8V5a2 2 0 0 1 2-2h3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M21 16v3a2 2 0 0 1-2 2h-3"/>`;
+        } else {
+            icon.innerHTML = `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>`;
+        }
+    }
+
+    // Update clock every second
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call
+
+    // Update fact every 30 seconds
+    setInterval(updateFact, 30000);
+    updateFact(); // Initial call
+
+    // Add fade transition for facts
+    const factElement = document.getElementById('fact');
+    factElement.style.transition = 'opacity 0.3s ease';
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'f' || e.key === 'F') {
+            toggleFullscreen();
+        }
+        if (e.key === 'd' || e.key === 'D') {
+            toggleDate();
+        }
+    });
+</script>
+</body>
+</html>
